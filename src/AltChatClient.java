@@ -1,5 +1,3 @@
-import com.sun.corba.se.spi.activation.Server;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,8 +16,8 @@ public class AltChatClient {
     private BufferedReader read;
     private PrintWriter write;
     private JFrame frame = new JFrame("ChatWindow");
-    private JTextField txtfield = new JTextField(40);
-    private JTextArea messageArea = new JTextArea(8, 40);
+    private JTextField txtField = new JTextField(40);
+    private JTextArea txtArea = new JTextArea(8, 40);
 
 
     /** MAIN - Runs the client */
@@ -34,18 +32,18 @@ public class AltChatClient {
     public AltChatClient() {
 
     /** GUI */
-        txtfield.setEditable(false);
-        messageArea.setEditable(false);
-        frame.getContentPane().add(txtfield, "North");
-        frame.getContentPane().add(new JScrollPane(messageArea), "Center");
+        txtField.setEditable(false);
+        txtArea.setEditable(false);
+        frame.getContentPane().add(txtField, "North");
+        frame.getContentPane().add(new JScrollPane(txtArea), "Center");
         frame.pack();
 
     /** Listeners */
-        txtfield.addActionListener(new ActionListener() {
+        txtField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                write.println(txtfield.getText());
-                txtfield.setText("");
+                write.println(txtField.getText());
+                txtField.setText("");
             }
         });
     }
@@ -86,10 +84,10 @@ public class AltChatClient {
                 write.println(getClientName());
             }
             else if (line.startsWith("NAMEACCEPTED")) {
-                txtfield.setEditable(true);
+                txtField.setEditable(true);
             }
             else if (line.startsWith("MESSAGE")) {
-                messageArea.append(line.substring(8) + "\n");
+                txtArea.append(line.substring(8) + "\n");
             }
         }
     }
