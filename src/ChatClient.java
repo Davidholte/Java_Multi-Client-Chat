@@ -11,6 +11,7 @@ import java.util.Scanner;
 public class ChatClient {
 
     private static InetAddress host;
+
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
@@ -22,10 +23,10 @@ public class ChatClient {
             System.out.println("Unable to establish connection to host, try again.");
             System.exit(1);
         }
-        accessServer();
+        serverConn();
     }
 
-    private static void accessServer() {
+    private static void serverConn() {
 
         Socket socket = null;
 
