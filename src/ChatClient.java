@@ -19,7 +19,7 @@ public class ChatClient {
             host = InetAddress.getLocalHost();
         }
         catch (UnknownHostException uex) {
-            System.out.println("NO HOST");
+            System.out.println("Unable to establish connection to host, try again.");
             System.exit(1);
         }
         accessServer();
