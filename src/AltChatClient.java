@@ -14,6 +14,7 @@ import java.net.Socket;
  */
 public class AltChatClient {
 
+    /** Textfields and Frames */
     private BufferedReader read;
     private PrintWriter write;
     private JFrame frame = new JFrame("ChatWindow");
@@ -21,7 +22,7 @@ public class AltChatClient {
     private JTextArea messageArea = new JTextArea(8, 40);
 
 
-
+    /** MAIN - Runs the client */
     public static void main(String[] args) throws IOException {
         AltChatClient client = new AltChatClient();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,27 +30,27 @@ public class AltChatClient {
         client.serverConn();
     }
 
-
-
+    /** Client Constructor */
     public AltChatClient() {
 
     /** GUI */
+        txtfield.setEditable(false);
+        messageArea.setEditable(false);
+        frame.getContentPane().add(txtfield, "North");
+        frame.getContentPane().add(new JScrollPane(messageArea), "Center");
+        frame.pack();
 
-    txtfield.setEditable(false);
-    messageArea.setEditable(false);
-    frame.getContentPane().add(txtfield, "North");
-    frame.getContentPane().add(new JScrollPane(messageArea), "Center");
-    frame.pack();
-
-    txtfield.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            write.println(txtfield.getText());
-            txtfield.setText("");
-        }
-    });
+    /** Listeners */
+        txtfield.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                write.println(txtfield.getText());
+                txtfield.setText("");
+            }
+        });
     }
 
+    /** Prompts the user for the servers IP address */
     private String promptforServerIP() {
         return JOptionPane.showInputDialog(frame,
                 "Enter IP Address of the server:",
@@ -58,6 +59,7 @@ public class AltChatClient {
         );
     }
 
+    /** Prompts the user for a temporary name */
     private String getClientName() {
         return JOptionPane.showInputDialog(frame,
                 "Choose a chat name:",
@@ -66,16 +68,18 @@ public class AltChatClient {
         );
     }
 
+    /** Connects to the server program */
     private void serverConn() throws IOException {
 
+        //Initialiing connection
         String serverIP = promptforServerIP();
         Socket socket = new Socket(serverIP, 8080);
 
         read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         write = new PrintWriter(socket.getOutputStream(), true);
 
+        // while loop processing messages from the server
         while (true) {
-
             String line = read.readLine();
 
             if (line.startsWith("SUBMITNAME")) {
