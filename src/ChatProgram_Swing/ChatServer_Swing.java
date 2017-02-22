@@ -1,3 +1,5 @@
+package ChatProgram_Swing;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +11,7 @@ import java.util.HashSet;
 /**
  * Created by Dave on 21/02/2017.
  */
-public class ChatServer {
+public class ChatServer_Swing {
 
 
     /** Sets and Variables */

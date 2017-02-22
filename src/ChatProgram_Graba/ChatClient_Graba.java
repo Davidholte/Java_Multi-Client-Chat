@@ -1,3 +1,5 @@
+package ChatProgram_Graba;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -8,7 +10,7 @@ import java.util.Scanner;
 /**
  * Created by Dave on 21/02/2017.
  */
-public class ChatClient {
+public class ChatClient_Graba {
 
     private static InetAddress host;
 

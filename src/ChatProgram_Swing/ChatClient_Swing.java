@@ -1,3 +1,5 @@
+package ChatProgram_Swing;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +12,7 @@ import java.net.Socket;
 /**
  * Created by Dave on 21/02/2017.
  */
-public class AltChatClient {
+public class ChatClient_Swing {
 
     /** Textfields and Frames */
     private BufferedReader read;
@@ -22,14 +24,14 @@ public class AltChatClient {
 
     /** MAIN - Runs the client */
     public static void main(String[] args) throws IOException {
-        AltChatClient client = new AltChatClient();
+        ChatClient_Swing client = new ChatClient_Swing();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         client.frame.setVisible(true);
         client.serverConn();
     }
 
     /** Client Constructor */
-    public AltChatClient() {
+    public ChatClient_Swing() {
 
     /** GUI */
         txtField.setEditable(false);
