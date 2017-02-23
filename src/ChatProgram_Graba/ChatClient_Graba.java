@@ -2,9 +2,7 @@ package ChatProgram_Graba;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.Scanner;
 
 /**
@@ -13,8 +11,11 @@ import java.util.Scanner;
 public class ChatClient_Graba {
 
     private static InetAddress host;
-
-    private static final int PORT = 8080;
+    private static final int PORT = 1234;
+    private static DatagramSocket datagramSocket;
+    private static DatagramPacket inPckt;
+    private static DatagramPacket outPckt;
+    private static byte[] buffer;
 
     public static void main(String[] args) {
 
@@ -30,48 +31,47 @@ public class ChatClient_Graba {
 
     private static void serverConn() {
 
-        Socket socket = null;
-
         try {
-            socket = new Socket(host, PORT);
 
-            Scanner read = new Scanner(socket.getInputStream());
-            PrintWriter write = new PrintWriter(socket.getOutputStream(), true);
+            datagramSocket = new DatagramSocket();
 
             // set up stream for key entry
             Scanner userInput = new Scanner(System.in);
 
-            String message = "";
-            String response = "";
+            String message;
+            String response;
 
-
-
-            while (!message.equals("*CLOSE*")) {
-                System.out.print("Enter Message: ");
+            do {
+                System.out.println("Enter a message: ");
                 message = userInput.nextLine();
-                write.println(message);
 
-                response = read.nextLine();
-                System.out.println("\nSERVER> "+ response);
+                if (!message.equals("*CLOSE*")) {
+                    outPckt = new DatagramPacket(message.getBytes(), 0, message.length(), host, PORT);
+
+                    datagramSocket.send(outPckt);
+                    buffer = new byte[256];
+
+                    inPckt = new DatagramPacket(buffer, buffer.length);
+
+                    datagramSocket.receive(inPckt);
+
+                    response = new String(inPckt.getData(), 0, inPckt.getLength());
+
+                    System.out.println("\nSERVER> " + response);
 
 
-
+                }
             }
+            while (!message.equals("*CLOSE*"));
 
         }
         catch (IOException ioex) {
             ioex.printStackTrace();
         }
         finally {
-
-            try {
                 System.out.println("\n* Closing connection... *");
-                socket.close();
-            }
-            catch (IOException ioex) {
-                System.out.println("Unable to disconnect!");
-                System.exit(1);
-            }
+                datagramSocket.close();
+
         }
     }
 }

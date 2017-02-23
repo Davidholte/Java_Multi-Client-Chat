@@ -16,7 +16,7 @@ public class ChatServer_Swing {
 
     /** Sets and Variables */
     // Set of names of all the clients
-    private static final int PORT = 8080;
+    private static final int PORT = 1234;
 
     private static HashSet<String> clientNames = new HashSet<>();
 
@@ -26,15 +26,15 @@ public class ChatServer_Swing {
     /** Main method to create ClientHandler threads */
     public static void main(String[] args) throws IOException {
 
-        System.out.println("Server is operational");
-        ServerSocket listener = new ServerSocket(PORT);
+        System.out.println("Server is operational..");
+        ServerSocket serverSocket = new ServerSocket(PORT);
         try {
             while (true) {
-                new ClientHandler(listener.accept()).start();
+                new ClientHandler(serverSocket.accept()).start();
             }
         }
         finally {
-            listener.close();
+            serverSocket.close();
         }
     }
 
