@@ -68,7 +68,7 @@ public class ChatClient_Swing {
         );
     }
 
-    /** Connects to the server program */
+    /** Connects to the ChatServer end system */
     private void serverConn() throws IOException {
 
         //Initializing connection
