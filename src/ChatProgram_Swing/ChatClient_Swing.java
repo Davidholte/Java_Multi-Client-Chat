@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class ChatClient_Swing {
 
-    /** Textfields and Frames */
+    // Textfields and Frames
     private BufferedReader read;
     private PrintWriter write;
     private JFrame frame = new JFrame("ChatWindow");
@@ -22,7 +22,7 @@ public class ChatClient_Swing {
     private JTextArea txtArea = new JTextArea(8, 40);
 
 
-    /** MAIN - Runs the client */
+    /** Main method-  Runs the client end system */
     public static void main(String[] args) throws IOException {
         ChatClient_Swing client = new ChatClient_Swing();
         client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,14 +33,14 @@ public class ChatClient_Swing {
     /** Client Constructor */
     public ChatClient_Swing() {
 
-    /** GUI */
+    // Graphical User Interface - frames / textfields
         txtField.setEditable(false);
         txtArea.setEditable(false);
         frame.getContentPane().add(txtField, "North");
         frame.getContentPane().add(new JScrollPane(txtArea), "Center");
         frame.pack();
 
-    /** Listeners */
+    // Action Listeners
         txtField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -51,7 +51,7 @@ public class ChatClient_Swing {
     }
 
     /** Prompts the user for the servers IP address */
-    private String promptforServerIP() {
+    private String promptForServerIP() {
         return JOptionPane.showInputDialog(frame,
                 "Enter IP Address of the server:",
                 "Welcome to the Chat Client",
@@ -71,30 +71,40 @@ public class ChatClient_Swing {
     /** Connects to the ChatServer end system */
     private void serverConn() throws IOException {
 
-        //Initializing connection
-        String serverIP = promptforServerIP();
+        // Initializing connection - constructing socket using TCP Protocol, using IP address and Port number
+        String serverIP = promptForServerIP();
         Socket socket = new Socket(serverIP, 8080);
 
+        // calling BufferedReader and PrintWriter with Input/OutputStreams to read/write data through sockets
         read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         write = new PrintWriter(socket.getOutputStream(), true);
 
-        // while loop processing protocol-messages from the server
+        // while loop - processing protocol-messages from the server
         while (true) {
             String line = read.readLine();
 
+            // recieve JOIN protocol-message from ChatServer end system, creating client
             if (line.startsWith("JOIN")) {
                 write.println(getClientName());
             }
+
+            // recieve J_OK protocol-message from ChatServer end system, acknowledges client
             else if (line.startsWith("J_OK")) {
                 txtField.setEditable(true);
             }
+
+            // recieve DATA protocol-message from ChatServer end system, enables writing a message
             else if (line.startsWith("DATA")) {
                 txtArea.append(line.substring(8) + "\n");
             }
+
+            // recieve J_ERROR_ILLCHAR protocol-message from ChatServer end system, prompts cient for different username
             else if (line.startsWith("J_ERROR_ILLCHAR")) {
                 write.println("Illegal characters in username, please try again");
                 write.println(getClientName());
             }
+
+            // recieve J_ERROR_EXIUSER protocol-message from ChatServer end system, prompts cient for different username
             else if (line.startsWith("J_ERROR_EXIUSER")) {
                 write.println("Username already exists, please try again");
                 write.println(getClientName());

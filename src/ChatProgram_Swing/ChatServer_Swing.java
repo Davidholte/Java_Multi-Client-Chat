@@ -14,25 +14,27 @@ import java.util.HashSet;
 public class ChatServer_Swing {
 
 
-    /** Sets and Variables */
-    // Set of names of all the clients
+    // Sets and Variables
     private static final int PORT = 1234;
-
+    // HashSet of usernames of all the clients
     private static HashSet<String> clientNames = new HashSet<>();
-
+    // HashSet of printwriters used by all clients
     private static HashSet<PrintWriter> printWriters = new HashSet<>();
 
 
-    /** Main method to create ClientHandler threads on client joins */
+    /** Main method - creates ClientHandler threads on client joins */
     public static void main(String[] args) throws IOException {
 
         System.out.println("Server is operational..");
         ServerSocket serverSocket = new ServerSocket(PORT);
+
+        // open a socket
         try {
             while (true) {
                 new ClientHandler(serverSocket.accept()).start();
             }
         }
+        // close a socket
         finally {
             serverSocket.close();
         }
@@ -42,17 +44,19 @@ public class ChatServer_Swing {
     /** ClientHandler class extended from Thread Class to handle each customer paralleled */
     private static class ClientHandler extends Thread {
 
+        // Variables
         private String name;
         private PrintWriter write;
         private BufferedReader read;
         private Socket socket;
 
+        /** Thread Constructor */
         public ClientHandler(Socket socket) {
             this.socket = socket;
         }
 
 
-    /** How each ClientHandler thread processes each client */
+        /** How each ClientHandler thread processes each client */
         public void run() {
 
             // creates new BufferedReader and PrintWriter, to be used as streaming channels pr client
@@ -60,6 +64,7 @@ public class ChatServer_Swing {
                 read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 write = new PrintWriter(socket.getOutputStream(), true);
 
+                // while loop - handles when ChatClient joins ChatServer end system
                 while (true) {
                     // send JOIN protocol-message to client, prompting for a username
                     write.println("JOIN");
@@ -70,6 +75,7 @@ public class ChatServer_Swing {
                         return;
                     }
                     else {
+                        // using synchronized keyword on the non-final HashSet because threads need to
                         synchronized (clientNames) {
                             // add client's username to HashSet if statement is true, and stops while loop
                             if (!clientNames.contains(name) && name.matches("^[a-zA-Z0-9]*$")) {
@@ -93,6 +99,7 @@ public class ChatServer_Swing {
                 write.println("J_OK");
                 printWriters.add(write);
 
+                // While loop - handles messages from client
                 while (true) {
                     String input = read.readLine();
 
@@ -117,7 +124,8 @@ public class ChatServer_Swing {
             catch (IOException ioException) {
                 System.out.println(ioException);
             }
-            /** Flushing - removing the objects from the respective HashSets */
+
+            // Flushing ChatClient - removing the objects from the respective HashSets
             finally {
                 // when flushing, clients username is removed from clientName HashSet
                 if (name != null) {
