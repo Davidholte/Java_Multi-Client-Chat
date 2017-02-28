@@ -71,25 +71,33 @@ public class ChatClient_Swing {
     /** Connects to the server program */
     private void serverConn() throws IOException {
 
-        //Initialiing connection
+        //Initializing connection
         String serverIP = promptforServerIP();
         Socket socket = new Socket(serverIP, 8080);
 
         read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         write = new PrintWriter(socket.getOutputStream(), true);
 
-        // while loop processing messages from the server
+        // while loop processing protocol-messages from the server
         while (true) {
             String line = read.readLine();
 
-            if (line.startsWith("SUBMITNAME")) {
+            if (line.startsWith("JOIN")) {
                 write.println(getClientName());
             }
-            else if (line.startsWith("NAMEACCEPTED")) {
+            else if (line.startsWith("J_OK")) {
                 txtField.setEditable(true);
             }
-            else if (line.startsWith("MESSAGE")) {
+            else if (line.startsWith("DATA")) {
                 txtArea.append(line.substring(8) + "\n");
+            }
+            else if (line.startsWith("J_ERROR_ILLCHAR")) {
+                write.println("Illegal characters in username, please try again");
+                write.println(getClientName());
+            }
+            else if (line.startsWith("J_ERROR_EXIUSER")) {
+                write.println("Username already exists, please try again");
+                write.println(getClientName());
             }
         }
     }

@@ -23,7 +23,7 @@ public class ChatServer_Swing {
     private static HashSet<PrintWriter> printWriters = new HashSet<>();
 
 
-    /** Main method to create ClientHandler threads */
+    /** Main method to create ClientHandler threads on client joins */
     public static void main(String[] args) throws IOException {
 
         System.out.println("Server is operational..");
@@ -60,7 +60,7 @@ public class ChatServer_Swing {
                 write = new PrintWriter(socket.getOutputStream(), true);
 
                 while (true) {
-                    write.println("SUBMITNAME");
+                    write.println("JOIN");
                     name = read.readLine();
 
                     if (name == null) {
@@ -68,14 +68,20 @@ public class ChatServer_Swing {
                     }
                     else {
                         synchronized (clientNames) {
-                            if (!clientNames.contains(name)) {
+                            if (!clientNames.contains(name) && name.matches("^[a-zA-Z0-9]*$")) {
                                 clientNames.add(name);
                                 break;
+                            }
+                            else if (!name.matches("^[a-zA-Z0-9]*$")) {
+                                write.println("J_ERROR_ILLCHAR");
+                            }
+                            else if (clientNames.contains(name)) {
+                                write.println("J_ERROR_EXIUSER");
                             }
                         }
                     }
                 }
-                write.println("NAMEACCEPTED");
+                write.println("J_OK");
                 printWriters.add(write);
 
                 while (true) {
@@ -84,8 +90,14 @@ public class ChatServer_Swing {
                     if (input == null) {
                         return;
                     }
+                    if (input.startsWith("QUIT")) {
+                        socket.close();
+                    }
+                    if (input.startsWith("LIST")) {
+                        write.println(clientNames);
+                    }
                     for (PrintWriter writer : printWriters) {
-                        writer.println("MESSAGE " + name + ": " + input);
+                        writer.println("DATA " + name + ": " + input);
                     }
                 }
             }
@@ -104,7 +116,7 @@ public class ChatServer_Swing {
                     socket.close();
                 }
                 catch (IOException ioException) {
-                 //   System.out.println(ioException);
+                    System.out.println(ioException);
                 }
             }
         }
