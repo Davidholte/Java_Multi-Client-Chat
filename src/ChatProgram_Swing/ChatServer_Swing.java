@@ -1,12 +1,18 @@
 package ChatProgram_Swing;
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Created by Dave on 21/02/2017.
@@ -15,7 +21,7 @@ public class ChatServer_Swing {
 
 
     // Sets and Variables
-    private static final int PORT = 1234;
+    private static final int PORT = 6660;
     // HashSet of usernames of all the clients
     private static HashSet<String> clientNames = new HashSet<>();
     // HashSet of printwriters used by all clients
@@ -78,13 +84,13 @@ public class ChatServer_Swing {
                         // using synchronized keyword on the non-final HashSet because threads need to
                         synchronized (clientNames) {
                             // add client's username to HashSet if statement is true, and stops while loop
-                            if (!clientNames.contains(name) && name.matches("^[a-zA-Z0-9]*$")) {
+                            if (!clientNames.contains(name) && name.matches("[0-9a-zA-Z_-]+")) {
                                 clientNames.add(name);
                                 break;
                             }
                             // checks if client's username is only alphanumeric, using a regular expression
                             // send J_ERROR_ILLCHAR protocol-message to client, trigger error message on client side
-                            else if (!name.matches("^[a-zA-Z0-9]*$")) {
+                            else if (!name.matches("[0-9a-zA-Z_-]+")) {
                                 write.println("J_ERROR_ILLCHAR");
                             }
                             // checks if client's username doesnt exist in HashSet
@@ -113,16 +119,23 @@ public class ChatServer_Swing {
                     }
                     // if client message is LIST, print a list of all usernames to client
                     if (input.startsWith("LIST")) {
-                        write.println(clientNames);
+                        
+                        write.println("LIST    " + clientNames);
+                        System.out.println(clientNames);
+
                     }
                     // prints one client's message to all clients
                     for (PrintWriter writer : printWriters) {
-                        writer.println("DATA " + name + ": " + input);
+                        // Client
+                        writer.println("DATA    " + name + ": " + input);
+                        // Server
+                        System.out.println("User: " + name + ", writes: " + input);
                     }
                 }
             }
+            // catches SocketException
             catch (IOException ioException) {
-                System.out.println(ioException);
+                System.out.println("User: " + name + " closed their connection.");
             }
 
             // Flushing ChatClient - removing the objects from the respective HashSets

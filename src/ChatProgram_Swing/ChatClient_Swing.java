@@ -24,10 +24,17 @@ public class ChatClient_Swing {
 
     /** Main method-  Runs the client end system */
     public static void main(String[] args) throws IOException {
-        ChatClient_Swing client = new ChatClient_Swing();
-        client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        client.frame.setVisible(true);
-        client.serverConn();
+        try {
+            ChatClient_Swing client = new ChatClient_Swing();
+            client.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            client.frame.setVisible(true);
+            client.frame.setSize(250, 250);
+            client.serverConn();
+        }
+        catch (NullPointerException nullex) {
+            System.out.println("Closed application");
+            System.exit(0);
+        }
     }
 
     /** Client Constructor */
@@ -68,12 +75,17 @@ public class ChatClient_Swing {
         );
     }
 
+//    private String heartbeat() {
+//      //  Timer t = new Timer();
+//      return
+//    }
+
     /** Connects to the ChatServer end system */
     private void serverConn() throws IOException {
 
         // Initializing connection - constructing socket using TCP Protocol, using IP address and Port number
         String serverIP = promptForServerIP();
-        Socket socket = new Socket(serverIP, 8080);
+        Socket socket = new Socket(serverIP, 6660);
 
         // calling BufferedReader and PrintWriter with Input/OutputStreams to read/write data through sockets
         read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -95,6 +107,11 @@ public class ChatClient_Swing {
 
             // recieve DATA protocol-message from ChatServer end system, enables writing a message
             else if (line.startsWith("DATA")) {
+                txtArea.append(line.substring(8) + "\n");
+            }
+
+            // recieve LIST protocol-message from ChatServer end system, enables writing a message
+            else if (line.startsWith("LIST")) {
                 txtArea.append(line.substring(8) + "\n");
             }
 
