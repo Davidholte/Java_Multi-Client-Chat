@@ -30,7 +30,7 @@ public class ChatClient_Swing {
 
         // Timer used by ALIVE heartbeat protocol
         Timer timer = new Timer();
-        timer.schedule(new Alive(), 10000, 10000);
+        timer.schedule(new Alive(), 60000, 60000);
 
         try {
             ChatClient_Swing client = new ChatClient_Swing();
