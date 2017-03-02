@@ -104,7 +104,7 @@ public class ChatServer_Swing {
 
                 // Stores how long the system has been running currently
                 long startHBTime = System.currentTimeMillis();
-
+                long startHBTimeSec = TimeUnit.MILLISECONDS.toSeconds(startHBTime);
                 // While loop - handles messages from client
                 while (true) {
                     String input = read.readLine();
@@ -121,7 +121,8 @@ public class ChatServer_Swing {
 
                     if (input.startsWith("*")) {
                         long currentHBTime = System.currentTimeMillis();
-                        System.out.println("User" + name + "has been connected for: "+ (startHBTime - currentHBTime / 1000) + " seconds.");
+                        long currentHBTimeSec = TimeUnit.MILLISECONDS.toSeconds(currentHBTime);
+                        System.out.println("User" + name + "has been connected for: "+ (currentHBTimeSec - startHBTimeSec) + " seconds.");
 
                     }
                     // prints one client's message to all clients, checks for max length on message string
@@ -130,7 +131,7 @@ public class ChatServer_Swing {
                             // Client
                             writer.println("DATA    " + name + ": " + input);
                             // Server
-                            System.out.println("User: " + name + ", writes: " + input);
+                            System.out.println("User: " + name + " writes: " + input);
                         }
                     }
                     // sends error protocol message to client
