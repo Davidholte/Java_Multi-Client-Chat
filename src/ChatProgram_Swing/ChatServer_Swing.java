@@ -9,10 +9,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Created by Dave on 21/02/2017.
@@ -22,6 +19,7 @@ public class ChatServer_Swing {
 
     // Sets and Variables
     private static final int PORT = 6660;
+    private static int usernameMaxLength = 12;
     // HashSet of usernames of all the clients
     private static HashSet<String> clientNames = new HashSet<>();
     // HashSet of printwriters used by all clients
@@ -84,7 +82,7 @@ public class ChatServer_Swing {
                         // using synchronized keyword on the non-final HashSet because threads need to
                         synchronized (clientNames) {
                             // add client's username to HashSet if statement is true, and stops while loop
-                            if (!clientNames.contains(name) && name.matches("[0-9a-zA-Z_-]+")) {
+                            if (!clientNames.contains(name) && name.matches("[0-9a-zA-Z_-]+") && name.length() <= usernameMaxLength) {
                                 clientNames.add(name);
                                 break;
                             }
@@ -105,7 +103,7 @@ public class ChatServer_Swing {
                 // While loop - handles messages from client
                 while (true) {
                     String input = read.readLine();
-
+                    
                     // if client sends no input, do nothing
                     if (input == null) {
                         return;

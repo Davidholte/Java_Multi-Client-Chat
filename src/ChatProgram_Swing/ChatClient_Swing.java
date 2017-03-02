@@ -95,7 +95,7 @@ public class ChatClient_Swing {
         Socket socket = new Socket(serverIP, 6660);
 
         // Start counting the elapsed time of the connection
-        startHeartBeat();
+        long newHeartBeat = startHeartBeat();
 
         // calling BufferedReader and PrintWriter with Input/OutputStreams to read/write data through sockets
         read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -122,7 +122,7 @@ public class ChatClient_Swing {
 
             // recieve J_ERROR protocol-message from ChatServer, prompts user for different username
             else if (line.startsWith("J_ERROR")) {
-                write.println(getClientName());
+                txtArea.setText("\n Error in Username, please try again \n");
             }
 
             // send  ALIVE protocol-message from ChatClient, displaying elapsed time the client has been connected to the server
