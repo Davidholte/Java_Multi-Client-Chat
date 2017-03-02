@@ -10,6 +10,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Dave on 21/02/2017.
@@ -20,6 +21,7 @@ public class ChatServer_Swing {
     // Sets and Variables
     private static final int PORT = 6660;
     private static int usernameMaxLength = 12;
+    private static int msgMaxLength = 250;
     // HashSet of usernames of all the clients
     private static HashSet<String> clientNames = new HashSet<>();
     // HashSet of printwriters used by all clients
@@ -89,7 +91,7 @@ public class ChatServer_Swing {
                             // checks if client's username is only alphanumeric and containing: '-' and '_', using a regular expression
                             // send J_ERR protocol-message to client, trigger error message on client side
                             else {
-                                write.println("J_ERROR");
+                                write.println("J_ERROR_USERNAME");
                             }
                         }
                     }
@@ -100,14 +102,13 @@ public class ChatServer_Swing {
                 // add printWriter to set of PrintWriters
                 printWriters.add(write);
 
+                // Stores how long the system has been running currently
+                long startHBTime = System.currentTimeMillis();
+
                 // While loop - handles messages from client
                 while (true) {
                     String input = read.readLine();
-                    
-                    // if client sends no input, do nothing
-                    if (input == null) {
-                        return;
-                    }
+
                     // if client message is QUIT, close socket
                     if (input.startsWith("QUIT")) {
                         socket.close();
@@ -117,12 +118,24 @@ public class ChatServer_Swing {
                         write.println("LIST    " + clientNames);
                         System.out.println(clientNames);
                     }
-                    // prints one client's message to all clients
-                    for (PrintWriter writer : printWriters) {
-                        // Client
-                        writer.println("DATA    " + name + ": " + input);
-                        // Server
-                        System.out.println("User: " + name + ", writes: " + input);
+
+                    if (input.startsWith("*")) {
+                        long currentHBTime = System.currentTimeMillis();
+                        System.out.println("User" + name + "has been connected for: "+ (startHBTime - currentHBTime / 1000) + " seconds.");
+
+                    }
+                    // prints one client's message to all clients, checks for max length on message string
+                    if (input.length() < msgMaxLength) {
+                        for (PrintWriter writer : printWriters) {
+                            // Client
+                            writer.println("DATA    " + name + ": " + input);
+                            // Server
+                            System.out.println("User: " + name + ", writes: " + input);
+                        }
+                    }
+                    // sends error protocol message to client
+                    else {
+                        write.println("J_ERROR_LENGTH");
                     }
                 }
             }
