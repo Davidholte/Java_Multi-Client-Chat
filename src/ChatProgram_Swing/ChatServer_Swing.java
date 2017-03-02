@@ -70,7 +70,7 @@ public class ChatServer_Swing {
                 read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 write = new PrintWriter(socket.getOutputStream(), true);
 
-                // while loop - handles when ChatClient joins ChatServer end system
+                // while loop - handles when ChatClient tries to create username and join ChatServer
                 while (true) {
                     // send JOIN protocol-message to client, prompting for a username
                     write.println("JOIN");
@@ -88,21 +88,18 @@ public class ChatServer_Swing {
                                 clientNames.add(name);
                                 break;
                             }
-                            // checks if client's username is only alphanumeric, using a regular expression
-                            // send J_ERROR_ILLCHAR protocol-message to client, trigger error message on client side
-                            else if (!name.matches("[0-9a-zA-Z_-]+")) {
-                                write.println("J_ERROR_ILLCHAR");
-                            }
-                            // checks if client's username doesnt exist in HashSet
-                            // send J_ERROR_EXIUSER protocol-message to client, trigger error message on client side
-                            else if (clientNames.contains(name)) {
-                                write.println("J_ERROR_EXIUSER");
+                            // checks if client's username is only alphanumeric and containing: '-' and '_', using a regular expression
+                            // send J_ERR protocol-message to client, trigger error message on client side
+                            else {
+                                write.println("J_ERROR");
                             }
                         }
                     }
                 }
                 // sends message to ChatClient end system that writing to server is now OK
                 write.println("J_OK");
+
+                // add printWriter to set of PrintWriters
                 printWriters.add(write);
 
                 // While loop - handles messages from client
@@ -119,10 +116,8 @@ public class ChatServer_Swing {
                     }
                     // if client message is LIST, print a list of all usernames to client
                     if (input.startsWith("LIST")) {
-                        
                         write.println("LIST    " + clientNames);
                         System.out.println(clientNames);
-
                     }
                     // prints one client's message to all clients
                     for (PrintWriter writer : printWriters) {
